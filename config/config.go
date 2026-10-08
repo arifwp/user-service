@@ -1,5 +1,12 @@
 package config
 
+import (
+	"os"
+	"user-service/common/util"
+
+	"github.com/sirupsen/logrus"
+)
+
 var Config AppConfig
 
 type AppConfig struct {
@@ -24,4 +31,16 @@ type Database struct {
 	MaxLifeTimeConnection int    `json:"maxLifeTimeConnection"`
 	MaxIdleConnection     int    `json:"maxIdleConnection"`
 	MaxIdleTime           int    `json:"maxIdleTime"`
+}
+
+func Init() {
+	err := util.BindFrameJSON(&Config, "config.json", ".")
+	if err != nil {
+		panic(err)
+		logrus.Infof("failed to bind config: %v", err)
+		err = util.BindFromConsul(&Config, os.Getenv("CONSUL_HTTP_URL"), os.Getenv("CONSUL_HTTP_KEY"))
+		if err != nil {
+			panic(err)
+		}
+	}
 }

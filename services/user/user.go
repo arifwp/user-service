@@ -115,11 +115,12 @@ func (u *UserService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 	}
 
 	user, err := u.repository.GetUser().Register(ctx, &dto.RegisterRequest{
-		Name:     req.Name,
-		Username: req.Username,
-		Password: string(hashedPassword),
-		Email:    req.Email,
-		RoleID:   constants.Customer,
+		Name:        req.Name,
+		Username:    req.Username,
+		Password:    string(hashedPassword),
+		PhoneNumber: req.PhoneNumber,
+		Email:       req.Email,
+		RoleID:      constants.Customer,
 	})
 
 	if err != nil {
@@ -179,7 +180,7 @@ func (u *UserService) Update(ctx context.Context, request *dto.UpdateRequest, uu
 	}
 
 	if request.Password != nil {
-		if *&request.Password != *&request.ConfirmPassword {
+		if request.ConfirmPassword == nil || *request.Password != *request.ConfirmPassword {
 			return nil, errConstant.ErrPasswordDoesNotMatch
 		}
 		hashedPassword, err = bcrypt.GenerateFromPassword([]byte(*request.Password), bcrypt.DefaultCost)

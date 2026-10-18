@@ -5,6 +5,7 @@ import (
 	"user-service/common/util"
 
 	"github.com/sirupsen/logrus"
+	_ "github.com/spf13/viper/remote"
 )
 
 var Config AppConfig
@@ -15,8 +16,8 @@ type AppConfig struct {
 	AppEnv                 string   `json:"appEnv"`
 	SignatureKey           string   `json:"signatureKey"`
 	Database               Database `json:"database"`
-	RateLimiterMaxRequests int      `json:"rateLimiterMaxRequests"`
-	RateLimiterTimeSeconds int      `json:"rateLimiterTimeSeconds"`
+	RateLimiterMaxRequests int      `json:"rateLimiterMaxRequest" mapstructure:"rateLimiterMaxRequest"`
+	RateLimiterTimeSeconds int      `json:"rateLimiterTimeSecond" mapstructure:"rateLimiterTimeSecond"`
 	JwtSecretKey           string   `json:"jwtSecretKey"`
 	JwtExpirationTime      int      `json:"jwtExpirationTime"`
 }
@@ -42,5 +43,8 @@ func Init() {
 		if err != nil {
 			panic(err)
 		}
+	}
+	if host := os.Getenv("DATABASE_HOST"); host != "" {
+		Config.Database.Host = host
 	}
 }

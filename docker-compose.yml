@@ -10,3 +10,12 @@ services:
       - "8001:8001" # change this to your port
     env_file:
       - .env
+    environment:
+      DATABASE_HOST: postgres
+    networks:
+      - database
+
+networks:
+  database:
+    external: true
+    name: docker-field-soccer_default
